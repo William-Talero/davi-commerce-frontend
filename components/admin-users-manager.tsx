@@ -86,7 +86,7 @@ export default function AdminUsersManager() {
         {isLoading ? (
           <div className="text-center py-8 dark:text-white">Cargando usuarios...</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 h-screen lg:grid-cols-3 gap-6">
             {users.map((userItem) => (
               <Card key={userItem.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105 dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>

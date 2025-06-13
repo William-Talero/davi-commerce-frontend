@@ -26,7 +26,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 dark:text-white">Carrito de compras</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 dark:text-white">Carrito de compras</h1>
 
       {hasStockIssues && (
         <Card className="mb-6 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:border-orange-800">
@@ -41,16 +41,74 @@ export default function CartPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4">
           {items.map((item) => {
             const isOverStock = item.quantity > item.stock
             const maxQuantity = Math.min(item.stock, 10)
 
             return (
               <Card key={item.id} className="dark:bg-gray-800 dark:border-gray-700">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
+                <CardContent className="p-4 sm:p-6">
+                  {/* Mobile Layout (stacked) */}
+                  <div className="flex flex-col space-y-3 sm:hidden">
+                    <div className="flex items-start space-x-3">
+                      <div className="relative w-16 h-16 flex-shrink-0">
+                        <Image
+                          src={item.image_url || "/placeholder.svg"}
+                          alt={item.name}
+                          fill
+                          className="object-cover rounded"
+                        />
+                      </div>
+                      <div className="flex-grow min-w-0 pr-2">
+                        <h3 className="font-semibold dark:text-white text-sm leading-tight truncate">{item.name}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">${typeof item.price === 'number' ? item.price.toFixed(2) : parseFloat(item.price || '0').toFixed(2)}</p>
+                        {isOverStock && (
+                          <p className="text-xs text-orange-600 dark:text-orange-400">Solo {item.stock} disponibles</p>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(item.id)}
+                          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="dark:border-gray-600 h-7 w-7 p-0 flex-shrink-0"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-6 text-center dark:text-white text-sm font-medium">{item.quantity}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          disabled={item.quantity >= maxQuantity}
+                          className="dark:border-gray-600 h-7 w-7 p-0 flex-shrink-0"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-semibold dark:text-white text-base">${((typeof item.price === 'number' ? item.price : parseFloat(item.price || '0')) * item.quantity).toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Desktop Layout (horizontal) */}
+                  <div className="hidden sm:flex items-center space-x-4">
                     <div className="relative w-20 h-20 flex-shrink-0">
                       <Image
                         src={item.image_url || "/placeholder.svg"}
@@ -109,7 +167,7 @@ export default function CartPage() {
 
         <div>
           <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <h3 className="text-xl font-semibold mb-4 dark:text-white">Resumen de orden</h3>
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">

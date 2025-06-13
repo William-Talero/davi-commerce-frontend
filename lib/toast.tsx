@@ -46,6 +46,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 function ToastContainer() {
   const { toasts, removeToast } = useToast()
 
+  const getToastIcon = (type: Toast["type"]) => {
+    switch (type) {
+      case "success":
+        return "✓"
+      case "error":
+        return "✕"
+      case "warning":
+        return "⚠"
+      case "info":
+        return "ℹ"
+      default:
+        return ""
+    }
+  }
+
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
       {toasts.map((toast) => (
@@ -53,17 +68,31 @@ function ToastContainer() {
           key={toast.id}
           className={`
             px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out
-            animate-in slide-in-from-right-full cursor-pointer backdrop-blur-sm
-            ${toast.type === "success" ? "bg-green-500 text-white" : ""}
-            ${toast.type === "error" ? "bg-red-500 text-white" : ""}
-            ${toast.type === "warning" ? "bg-yellow-500 text-white" : ""}
-            ${toast.type === "info" ? "bg-blue-500 text-white" : ""}
+            animate-in slide-in-from-right-full cursor-pointer border min-w-0
+            ${toast.type === "success" ? "bg-green-600 text-white border-green-600" : ""}
+            ${toast.type === "error" ? "bg-red-600 text-white border-red-600" : ""}
+            ${toast.type === "warning" ? "bg-yellow-600 text-white border-yellow-600" : ""}
+            ${toast.type === "info" ? "bg-blue-600 text-white border-blue-600" : ""}
           `}
+          style={{
+            backgroundColor: toast.type === "success" ? "#059669" : 
+                           toast.type === "error" ? "#dc2626" : 
+                           toast.type === "warning" ? "#d97706" : 
+                           toast.type === "info" ? "#2563eb" : undefined,
+            color: "#ffffff",
+            borderColor: toast.type === "success" ? "#059669" : 
+                        toast.type === "error" ? "#dc2626" : 
+                        toast.type === "warning" ? "#d97706" : 
+                        toast.type === "info" ? "#2563eb" : undefined
+          }}
           onClick={() => removeToast(toast.id)}
         >
           <div className="flex items-center justify-between">
-            <span>{toast.message}</span>
-            <button className="ml-4 text-white hover:text-gray-200 text-lg font-bold">×</button>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold">{getToastIcon(toast.type)}</span>
+              <span>{toast.message}</span>
+            </div>
+            <button className="ml-4 opacity-70 hover:opacity-100 text-lg font-bold transition-opacity">×</button>
           </div>
         </div>
       ))}
