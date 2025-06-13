@@ -111,10 +111,10 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
   
   if (backendAvailable) {
     try {
-      const response = await apiClient.getOrders()
+      const response = await apiClient.getOrders(userId)
       
       if (response && Array.isArray(response)) {
-        // Backend returns orders filtered by user or all orders if admin
+        // Backend returns orders filtered by user
         return response.map(toFrontendOrder)
       }
       

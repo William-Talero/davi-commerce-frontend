@@ -21,7 +21,11 @@
       "Bash(find:*)",
       "Bash(npm install:*)",
       "Bash(pnpm install:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run test:*)",
+      "Bash(npx jest:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

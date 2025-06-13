@@ -77,20 +77,6 @@ export default function LoginForm() {
               )}
             </Button>
           </form>
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg dark:bg-blue-900/20">
-            <p className="text-sm text-gray-600 dark:text-gray-300 text-center font-medium">Credenciales de Demostración:</p>
-            <div className="text-sm text-center space-y-1 mt-2 text-gray-700 dark:text-gray-300">
-              <p>
-                <strong>Administrador:</strong> admin@davicommerce.com / Admin123!
-              </p>
-              <p>
-                <strong>Usuario:</strong> user@davicommerce.com / User123!
-              </p>
-              <p>
-                <strong>Cliente:</strong> customer@davicommerce.com / Customer123!
-              </p>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

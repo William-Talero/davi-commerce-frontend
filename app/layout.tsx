@@ -13,7 +13,12 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Davi-Commerce - Tu Tienda Online",
   description: "Aplicación de comercio electrónico moderna construida con Next.js",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  icons: {
+    icon: '/store-solid.png',
+    shortcut: '/store-solid.png',
+    apple: '/store-solid.png',
+  },
 }
 
 export default function RootLayout({

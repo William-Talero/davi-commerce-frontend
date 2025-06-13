@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ShoppingCart, User, Settings, Search } from "lucide-react"
+import { ShoppingCart, User, Settings, Search, LogIn, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth-context"
@@ -96,17 +96,36 @@ export default function Header() {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 md:space-x-2">
                 <Link href="/auth/login">
                   <Button
                     variant="outline"
-                    className="hover:scale-105 transition-transform dark:text-white dark:border-gray-600"
+                    size="sm"
+                    className="hover:scale-105 transition-transform dark:text-white dark:border-gray-600 hidden md:flex"
                   >
                     Iniciar Sesión
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="hover:scale-110 transition-transform dark:text-white dark:border-gray-600 md:hidden"
+                  >
+                    <LogIn className="h-4 w-4" />
+                  </Button>
                 </Link>
                 <Link href="/auth/register">
-                  <Button className="hover:scale-105 transition-transform">Registrarse</Button>
+                  <Button 
+                    size="sm"
+                    className="hover:scale-105 transition-transform hidden md:flex"
+                  >
+                    Registrarse
+                  </Button>
+                  <Button
+                    size="icon"
+                    className="hover:scale-110 transition-transform md:hidden"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
                 </Link>
               </div>
             )}
