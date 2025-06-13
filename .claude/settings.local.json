@@ -18,7 +18,10 @@
       "Bash(npm run build:*)",
       "Bash(node:*)",
       "Bash(rg:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm install:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }
