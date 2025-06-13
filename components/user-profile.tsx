@@ -22,7 +22,7 @@ export default function UserProfile() {
     if (user) {
       setLoading(true)
       try {
-        const userOrders = await getUserOrders()
+        const userOrders = await getUserOrders(user.id)
         setOrders(userOrders)
       } catch (error) {
         console.error("Error fetching orders:", error)

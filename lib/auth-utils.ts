@@ -18,8 +18,6 @@ export function extractUserFromRequest(request: NextRequest): JWTPayload {
   const token = authHeader.substring(7)
   
   try {
-    // Simple JWT decode (without signature verification for now)
-    // In a production app, you should verify the signature
     const base64Payload = token.split('.')[1]
     const payload = JSON.parse(Buffer.from(base64Payload, 'base64').toString())
     
