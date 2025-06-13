@@ -162,8 +162,9 @@ class ApiClient {
   }
 
   // Order endpoints
-  async getOrders() {
-    return this.request<any[]>('/orders');
+  async getOrders(userId?: string) {
+    const endpoint = userId ? `/orders-backend?userId=${userId}` : '/orders-backend';
+    return this.request<any[]>(endpoint);
   }
 
   async getOrderById(id: string) {

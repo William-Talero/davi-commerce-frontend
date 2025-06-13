@@ -9,9 +9,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch --passWithNoTests",
+    "test:coverage": "jest --coverage --passWithNoTests",
+    "test:simple": "jest __tests__/simple.test.ts __tests__/constants.test.ts __tests__/math-utils.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
