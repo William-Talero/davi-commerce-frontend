@@ -106,15 +106,15 @@ export async function createOrder(userId: string, items: CartItem[], shippingAdd
   }
 }
 
-export async function getUserOrders(userId: string): Promise<Order[]> {
+export async function getUserOrders(): Promise<Order[]> {
   const backendAvailable = await isBackendAvailable()
   
   if (backendAvailable) {
     try {
-      const response = await apiClient.getOrders(userId)
+      const response = await apiClient.getOrders()
       
       if (response && Array.isArray(response)) {
-        // Backend returns orders filtered by user
+        // Backend returns orders filtered by authenticated user
         return response.map(toFrontendOrder)
       }
       
