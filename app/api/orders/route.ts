@@ -4,10 +4,7 @@ import { extractUserFromRequest } from "@/lib/auth-utils"
 
 export async function GET(request: NextRequest) {
   try {
-    // Extract user from JWT token
     const user = extractUserFromRequest(request)
-    
-    // Get orders for the authenticated user only
     const orders = await getUserOrders(user.userId)
     
     return NextResponse.json(orders)
