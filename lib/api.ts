@@ -94,6 +94,24 @@ class ApiClient {
     return response.data;
   }
 
+  async register(email: string, password: string, firstName: string, lastName: string) {
+    const response = await this.request<ApiResponse<{ user: any; accessToken: string }>>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ 
+        email, 
+        password, 
+        firstName, 
+        lastName 
+      }),
+    });
+    
+    if (response.data?.accessToken) {
+      this.setToken(response.data.accessToken);
+    }
+    
+    return response.data;
+  }
+
   // User endpoints
   async getCurrentUser() {
     return this.request<any>('/users/me');

@@ -24,33 +24,54 @@ export async function signUp(email: string, password: string, firstName: string,
   
   if (backendAvailable) {
     try {
-      // For now, we don't have a signup endpoint in the backend, so we'll use mock
-          console.warn("Signup not implemented in backend yet, using mock user")
-      return {
-        id: `user-${Date.now()}`,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        role: "customer",
+      const response = await apiClient.register(email, password, firstName, lastName)
+      
+      if (response?.user) {
+        return toFrontendUser(response.user)
       }
+      
+      throw new Error('Registration failed - no user data returned')
     } catch (error) {
-      console.warn("Backend signup failed, using mock user:", error)
-      return {
-        id: `user-${Date.now()}`,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        role: "customer",
-      }
+      console.warn("External backend signup failed, trying local fallback:", error)
     }
   }
 
-  return {
-    id: `user-${Date.now()}`,
-    email,
-    first_name: firstName,
-    last_name: lastName,
-    role: "customer",
+  // Fallback to local API endpoint
+  try {
+    const response = await fetch('/api/auth/register-backend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        firstName,
+        lastName
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Registration failed')
+    }
+
+    const data = await response.json()
+    
+    if (data.success && data.data?.user) {
+      return {
+        id: data.data.user.id,
+        email: data.data.user.email,
+        first_name: data.data.user.firstName,
+        last_name: data.data.user.lastName,
+        role: data.data.user.role,
+      }
+    }
+    
+    throw new Error('Registration failed - invalid response')
+  } catch (error) {
+    console.error("Registration failed:", error)
+    throw new Error(error instanceof Error ? error.message : 'Registration failed')
   }
 }
 
