@@ -106,21 +106,33 @@ export async function createOrder(userId: string, items: CartItem[], shippingAdd
   }
 }
 
-export async function getUserOrders(): Promise<Order[]> {
+export async function getUserOrders(userId?: string): Promise<Order[]> {
   const backendAvailable = await isBackendAvailable()
   
-  if (backendAvailable) {
+  if (backendAvailable && userId) {
     try {
-      const response = await apiClient.getOrders()
+      // Use the specific getUserByUser endpoint
+      const response = await apiClient.getOrdersByUser(userId)
       
       if (response && Array.isArray(response)) {
-        // Backend returns orders filtered by authenticated user
+        // Backend returns orders filtered by user ID
         return response.map(toFrontendOrder)
       }
       
       return []
     } catch (error) {
       console.warn("Backend getUserOrders failed:", error)
+      // Fallback: try to get all orders and filter client-side
+      try {
+        const allOrders = await apiClient.getOrders()
+        if (allOrders && Array.isArray(allOrders)) {
+          // Filter orders by user ID on client side as fallback
+          const userOrders = allOrders.filter((order: any) => order.user_id === userId || order.userId === userId)
+          return userOrders.map(toFrontendOrder)
+        }
+      } catch (fallbackError) {
+        console.warn("Backend fallback also failed:", fallbackError)
+      }
       return []
     }
   }

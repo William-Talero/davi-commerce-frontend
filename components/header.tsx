@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ShoppingCart, User, Settings, Search, LogIn, UserPlus } from "lucide-react"
+import { ShoppingCart, User, Settings, Search, LogIn, UserPlus, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth-context"
@@ -89,10 +89,19 @@ export default function Header() {
                 )}
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={logout}
-                  className="hover:scale-105 transition-transform dark:text-white dark:border-gray-600"
+                  className="hover:scale-105 transition-transform dark:text-white dark:border-gray-600 hidden md:flex"
                 >
                   Cerrar Sesión
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={logout}
+                  className="hover:scale-110 transition-transform dark:text-white dark:border-gray-600 md:hidden"
+                >
+                  <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
