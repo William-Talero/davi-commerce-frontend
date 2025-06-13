@@ -104,6 +104,91 @@ export default function OrderDetailModal({ isOpen, onClose, order }: OrderDetail
     }
   }
 
+  const getShippingAddress = () => {
+    if (!order.shipping_address) {
+      return {
+        first_name: '',
+        last_name: '',
+        address: '',
+        city: '',
+        state: '',
+        zip_code: '',
+        country: ''
+      }
+    }
+
+    // Handle case where shipping_address is a string (JSON)
+    if (typeof order.shipping_address === 'string') {
+      try {
+        const parsed = JSON.parse(order.shipping_address)
+        return {
+          first_name: parsed.firstName || parsed.first_name || '',
+          last_name: parsed.lastName || parsed.last_name || '',
+          address: parsed.address || '',
+          city: parsed.city || '',
+          state: parsed.state || '',
+          zip_code: parsed.zipCode || parsed.zip_code || '',
+          country: parsed.country || ''
+        }
+      } catch (error) {
+        console.warn('Failed to parse shipping address:', error)
+        return {
+          first_name: '',
+          last_name: '',
+          address: order.shipping_address,
+          city: '',
+          state: '',
+          zip_code: '',
+          country: ''
+        }
+      }
+    }
+
+    // Handle object format (already parsed)
+    const addr = order.shipping_address as any
+    
+    // Special case: Check if the real data is in the 'street' field as JSON string
+    if (addr.street && typeof addr.street === 'string') {
+      try {
+        const parsed = JSON.parse(addr.street)
+        return {
+          first_name: parsed.firstName || parsed.first_name || '',
+          last_name: parsed.lastName || parsed.last_name || '',
+          address: parsed.address || '',
+          city: parsed.city || '',
+          state: parsed.state || '',
+          zip_code: parsed.zipCode || parsed.zip_code || '',
+          country: parsed.country || ''
+        }
+      } catch (error) {
+        console.warn('Failed to parse street field as JSON:', error)
+        // Fallback to using street as address
+        return {
+          first_name: '',
+          last_name: '',
+          address: addr.street,
+          city: addr.city || '',
+          state: addr.state || '',
+          zip_code: addr.zipCode || addr.zip_code || '',
+          country: addr.country || ''
+        }
+      }
+    }
+
+    // Normal object format
+    return {
+      first_name: addr.firstName || addr.first_name || '',
+      last_name: addr.lastName || addr.last_name || '',
+      address: addr.address || '',
+      city: addr.city || '',
+      state: addr.state || '',
+      zip_code: addr.zipCode || addr.zip_code || '',
+      country: addr.country || ''
+    }
+  }
+
+  const shippingAddress = getShippingAddress()
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto dark:bg-gray-800">
@@ -156,12 +241,31 @@ export default function OrderDetailModal({ isOpen, onClose, order }: OrderDetail
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  <p className="text-sm dark:text-white">{order.shipping_address?.first_name} {order.shipping_address?.last_name}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{order.shipping_address?.address}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {order.shipping_address?.city}, {order.shipping_address?.state} {order.shipping_address?.zip_code}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{order.shipping_address?.country}</p>
+                  {(shippingAddress.first_name || shippingAddress.last_name) ? (
+                    <p className="text-sm dark:text-white">
+                      {shippingAddress.first_name} {shippingAddress.last_name}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">Nombre no disponible</p>
+                  )}
+                  
+                  {shippingAddress.address ? (
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{shippingAddress.address}</p>
+                  ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">Dirección no disponible</p>
+                  )}
+                  
+                  {(shippingAddress.city || shippingAddress.zip_code) ? (
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {shippingAddress.city}{shippingAddress.state && `, ${shippingAddress.state}`} {shippingAddress.zip_code}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">Ciudad/Código postal no disponible</p>
+                  )}
+                  
+                  {shippingAddress.country && (
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{shippingAddress.country}</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -189,6 +189,22 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Admin endpoints
+  async getAllOrders() {
+    return this.request<any[]>('/orders');
+  }
+
+  async updateOrderStatus(id: string, status: string) {
+    return this.request<any>(`/orders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async getLowStockProducts() {
+    return this.request<any[]>('/products?lowStock=true');
+  }
 }
 
 // Export singleton instance

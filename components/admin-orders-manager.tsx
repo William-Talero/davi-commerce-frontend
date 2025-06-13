@@ -40,10 +40,10 @@ export default function AdminOrdersManager() {
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     const success = await updateOrderStatus(orderId, newStatus)
     if (success) {
-      addToast("Order status updated successfully!", "success")
+      addToast("¡Estado del pedido actualizado exitosamente!", "success")
       await fetchOrders()
     } else {
-      addToast("Failed to update order status", "error")
+      addToast("Error al actualizar el estado del pedido", "error")
     }
   }
 
@@ -64,8 +64,90 @@ export default function AdminOrdersManager() {
     }
   }
 
+  const translateOrderStatus = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Pendiente"
+      case "processing":
+        return "Procesando"
+      case "shipped":
+        return "Enviado"
+      case "delivered":
+        return "Entregado"
+      case "cancelled":
+        return "Cancelado"
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1)
+    }
+  }
+
+  const getShippingAddressDisplay = (shippingAddress: any) => {
+    if (!shippingAddress) {
+      return {
+        first_name: '',
+        last_name: '',
+        address: '',
+        city: '',
+        zip_code: ''
+      }
+    }
+
+    // Handle case where shipping_address is a string (JSON)
+    if (typeof shippingAddress === 'string') {
+      try {
+        const parsed = JSON.parse(shippingAddress)
+        return {
+          first_name: parsed.firstName || parsed.first_name || '',
+          last_name: parsed.lastName || parsed.last_name || '',
+          address: parsed.address || '',
+          city: parsed.city || '',
+          zip_code: parsed.zipCode || parsed.zip_code || ''
+        }
+      } catch (error) {
+        return {
+          first_name: '',
+          last_name: '',
+          address: shippingAddress,
+          city: '',
+          zip_code: ''
+        }
+      }
+    }
+
+    // Special case: Check if the real data is in the 'street' field as JSON string
+    if (shippingAddress.street && typeof shippingAddress.street === 'string') {
+      try {
+        const parsed = JSON.parse(shippingAddress.street)
+        return {
+          first_name: parsed.firstName || parsed.first_name || '',
+          last_name: parsed.lastName || parsed.last_name || '',
+          address: parsed.address || '',
+          city: parsed.city || '',
+          zip_code: parsed.zipCode || parsed.zip_code || ''
+        }
+      } catch (error) {
+        return {
+          first_name: '',
+          last_name: '',
+          address: shippingAddress.street,
+          city: shippingAddress.city || '',
+          zip_code: shippingAddress.zipCode || shippingAddress.zip_code || ''
+        }
+      }
+    }
+
+    // Handle object format
+    return {
+      first_name: shippingAddress.firstName || shippingAddress.first_name || '',
+      last_name: shippingAddress.lastName || shippingAddress.last_name || '',
+      address: shippingAddress.address || '',
+      city: shippingAddress.city || '',
+      zip_code: shippingAddress.zipCode || shippingAddress.zip_code || ''
+    }
+  }
+
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen flex items-center justify-center dark:text-white">Cargando...</div>
   }
 
   if (!user || user.role !== "admin") {
@@ -73,34 +155,34 @@ export default function AdminOrdersManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Order Management</h1>
-          <p className="text-gray-600">View and manage customer orders</p>
+          <h1 className="text-3xl font-bold mb-2 dark:text-white">Gestión de Pedidos</h1>
+          <p className="text-gray-600 dark:text-gray-300">Ver y gestionar pedidos de clientes</p>
         </div>
 
         {isLoading ? (
-          <div className="text-center py-8">Loading orders...</div>
+          <div className="text-center py-8 dark:text-white">Cargando pedidos...</div>
         ) : orders.length === 0 ? (
-          <Card>
+          <Card className="dark:bg-gray-800 dark:border-gray-700">
             <CardContent className="text-center py-8">
-              <p className="text-gray-600">No orders found.</p>
+              <p className="text-gray-600 dark:text-gray-300">No se encontraron pedidos.</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Card key={order.id} className="hover:shadow-lg transition-all duration-300">
+              <Card key={order.id} className="hover:shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg">Order #{order.id.slice(0, 8)}</CardTitle>
-                      <p className="text-sm text-gray-600">
+                      <CardTitle className="text-lg dark:text-white">Pedido #{order.id.slice(0, 8)}</CardTitle>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         {order.user?.first_name} {order.user?.last_name} ({order.user?.email})
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         {new Date(order.created_at).toLocaleDateString()} at{" "}
                         {new Date(order.created_at).toLocaleTimeString()}
                       </p>
@@ -108,7 +190,7 @@ export default function AdminOrdersManager() {
                     <div className="text-right">
                       <p className="text-2xl font-bold text-green-600">${order.total_amount.toFixed(2)}</p>
                       <Badge variant={getStatusColor(order.status)}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        {translateOrderStatus(order.status)}
                       </Badge>
                     </div>
                   </div>
@@ -116,31 +198,34 @@ export default function AdminOrdersManager() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Shipping Address</h4>
-                      {order.shipping_address && (
-                        <div className="text-sm text-gray-600">
-                          <p>
-                            {order.shipping_address.firstName} {order.shipping_address.lastName}
-                          </p>
-                          <p>{order.shipping_address.address}</p>
-                          <p>
-                            {order.shipping_address.city}, {order.shipping_address.zipCode}
-                          </p>
-                        </div>
-                      )}
+                      <h4 className="font-semibold mb-2 dark:text-white">Dirección de Envío</h4>
+                      {(() => {
+                        const addr = getShippingAddressDisplay(order.shipping_address)
+                        return (
+                          <div className="text-sm text-gray-600 dark:text-gray-300">
+                            <p>
+                              {addr.first_name} {addr.last_name}
+                            </p>
+                            <p>{addr.address}</p>
+                            <p>
+                              {addr.city}{addr.zip_code && `, ${addr.zip_code}`}
+                            </p>
+                          </div>
+                        )
+                      })()}
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Update Status</h4>
+                      <h4 className="font-semibold mb-2 dark:text-white">Actualizar Estado</h4>
                       <Select value={order.status} onValueChange={(value) => handleStatusUpdate(order.id, value)}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="processing">Processing</SelectItem>
-                          <SelectItem value="shipped">Shipped</SelectItem>
-                          <SelectItem value="delivered">Delivered</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="pending">Pendiente</SelectItem>
+                          <SelectItem value="processing">Procesando</SelectItem>
+                          <SelectItem value="shipped">Enviado</SelectItem>
+                          <SelectItem value="delivered">Entregado</SelectItem>
+                          <SelectItem value="cancelled">Cancelado</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

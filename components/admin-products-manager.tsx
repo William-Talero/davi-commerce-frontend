@@ -154,13 +154,13 @@ export default function AdminProductsManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Gestión de Productos</h1>
-            <p className="text-gray-600">Administra tu catálogo de productos e inventario</p>
+            <h1 className="text-3xl font-bold mb-2 dark:text-white">Gestión de Productos</h1>
+            <p className="text-gray-600 dark:text-gray-300">Administra tu catálogo de productos e inventario</p>
           </div>
           <Button onClick={() => setShowForm(true)} className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
@@ -169,9 +169,9 @@ export default function AdminProductsManager() {
         </div>
 
         {showForm && (
-          <Card className="mb-8 animate-in slide-in-from-top duration-300">
+          <Card className="mb-8 animate-in slide-in-from-top duration-300 dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>{editingProduct ? "Editar Producto" : "Añadir Nuevo Producto"}</CardTitle>
+              <CardTitle className="dark:text-white">{editingProduct ? "Editar Producto" : "Añadir Nuevo Producto"}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -254,11 +254,11 @@ export default function AdminProductsManager() {
         )}
 
         {isLoading ? (
-          <div className="text-center py-8">Cargando productos...</div>
+          <div className="text-center py-8 dark:text-white">Cargando productos...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <Card key={product.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <Card key={product.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105 dark:bg-gray-800 dark:border-gray-700">
                 <CardContent className="p-4">
                   <div className="aspect-square relative mb-4 overflow-hidden rounded-lg">
                     <Image
@@ -270,14 +270,14 @@ export default function AdminProductsManager() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
+                      <h3 className="font-semibold text-lg line-clamp-1 dark:text-white">{product.name}</h3>
                       <Badge variant={product.stock <= (product.low_stock_threshold || 5) ? "destructive" : "default"}>
                         {product.stock} in stock
                       </Badge>
                     </div>
-                    <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{product.description}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-xl font-bold text-green-600">${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || '0').toFixed(2)}</span>
+                      <span className="text-xl font-bold text-green-600 dark:text-green-400">${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || '0').toFixed(2)}</span>
                       <Badge variant="secondary">{product.category}</Badge>
                     </div>
                     <div className="flex gap-2 pt-2">

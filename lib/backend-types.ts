@@ -171,12 +171,76 @@ export function toBackendUser(frontendUser: import('./types').User): BackendUser
 }
 
 export function toFrontendOrder(backendOrder: BackendOrder): import('./types').Order {
+  // Parse shipping address if it's a JSON string
+  let parsedShippingAddress
+  try {
+    if (typeof backendOrder.shippingAddress === 'string') {
+      parsedShippingAddress = JSON.parse(backendOrder.shippingAddress)
+    } else {
+      parsedShippingAddress = backendOrder.shippingAddress
+    }
+  } catch (error) {
+    console.warn('Failed to parse shipping address:', error)
+    parsedShippingAddress = {
+      first_name: '',
+      last_name: '',
+      address: backendOrder.shippingAddress || '',
+      city: '',
+      state: '',
+      zip_code: '',
+      country: ''
+    }
+  }
+
+  // Convert field names from frontend format to expected format
+  if (parsedShippingAddress && typeof parsedShippingAddress === 'object') {
+    // Special case: Check if the real data is in the 'street' field as JSON string
+    if (parsedShippingAddress.street && typeof parsedShippingAddress.street === 'string') {
+      try {
+        const streetData = JSON.parse(parsedShippingAddress.street)
+        parsedShippingAddress = {
+          first_name: streetData.firstName || streetData.first_name || '',
+          last_name: streetData.lastName || streetData.last_name || '',
+          address: streetData.address || '',
+          city: streetData.city || '',
+          state: streetData.state || '',
+          zip_code: streetData.zipCode || streetData.zip_code || '',
+          country: streetData.country || ''
+        }
+      } catch (streetError) {
+        console.warn('Failed to parse street field as JSON:', streetError)
+        // Fallback to using street as address
+        parsedShippingAddress = {
+          first_name: '',
+          last_name: '',
+          address: parsedShippingAddress.street,
+          city: parsedShippingAddress.city || '',
+          state: parsedShippingAddress.state || '',
+          zip_code: parsedShippingAddress.zipCode || parsedShippingAddress.zip_code || '',
+          country: parsedShippingAddress.country || ''
+        }
+      }
+    }
+    // Handle both formats: frontend (firstName) and backend (first_name)
+    else if (parsedShippingAddress.firstName && !parsedShippingAddress.first_name) {
+      parsedShippingAddress = {
+        first_name: parsedShippingAddress.firstName,
+        last_name: parsedShippingAddress.lastName,
+        address: parsedShippingAddress.address,
+        city: parsedShippingAddress.city,
+        state: parsedShippingAddress.state || '',
+        zip_code: parsedShippingAddress.zipCode,
+        country: parsedShippingAddress.country || ''
+      }
+    }
+  }
+
   return {
     id: backendOrder.id,
     user_id: backendOrder.userId,
     total_amount: backendOrder.totalAmount,
     status: backendOrder.status,
-    shipping_address: backendOrder.shippingAddress,
+    shipping_address: parsedShippingAddress,
     created_at: backendOrder.createdAt,
     updated_at: backendOrder.updatedAt,
     user: backendOrder.user ? {

@@ -30,9 +30,20 @@ export interface Order {
   user_id: string
   total_amount: number
   status: string
-  shipping_address: any
+  shipping_address: {
+    first_name: string
+    last_name: string
+    address: string
+    city: string
+    state?: string
+    zip_code: string
+    country?: string
+  }
   created_at: string
   updated_at: string
+  estimated_delivery?: string
+  payment_method?: string
+  payment_status?: string
   user?: {
     first_name: string
     last_name: string

@@ -144,23 +144,23 @@ export default function CheckoutForm() {
     e.preventDefault()
 
     if (!user) {
-      addToast("Please log in to complete your purchase", "error")
+      addToast("Por favor, inicia sesión para completar tu compra", "error")
       router.push("/auth/login")
       return
     }
 
     if (hasStockIssues) {
-      addToast("Some items in your cart are out of stock", "error")
+      addToast("Algunos productos en tu carrito están agotados", "error")
       return
     }
 
     if (items.length === 0) {
-      addToast("Your cart is empty", "error")
+      addToast("Tu carrito está vacío", "error")
       return
     }
 
     if (!validateForm()) {
-      addToast("Please fix the errors in the form", "error")
+      addToast("Por favor, corrige los errores en el formulario", "error")
       return
     }
 
@@ -209,7 +209,7 @@ export default function CheckoutForm() {
 
         clearCart()
       } else {
-        throw new Error("Failed to create order")
+        throw new Error("Error al crear el pedido")
       }
     } catch (error) {
       console.error("Checkout error:", error)

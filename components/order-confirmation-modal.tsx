@@ -23,6 +23,8 @@ interface OrderConfirmationModalProps {
       address: string
       city: string
       zipCode: string
+      state?: string
+      country?: string
     }
     paymentMethod: {
       cardNumber: string
@@ -52,11 +54,11 @@ export default function OrderConfirmationModal({ isOpen, onClose, orderData }: O
       last_name: orderData.shippingAddress.lastName,
       address: orderData.shippingAddress.address,
       city: orderData.shippingAddress.city,
-      state: orderData.shippingAddress.state,
+      state: orderData.shippingAddress.state || '',
       zip_code: orderData.shippingAddress.zipCode,
-      country: orderData.shippingAddress.country
+      country: orderData.shippingAddress.country || ''
     },
-    payment_method: `**** **** **** ${orderData.paymentInfo.cardNumber.slice(-4)}`,
+    payment_method: orderData.paymentMethod?.cardNumber ? `**** **** **** ${orderData.paymentMethod.cardNumber.slice(-4)}` : 'N/A',
     payment_status: "completed"
   }
 
@@ -127,9 +129,9 @@ export default function OrderConfirmationModal({ isOpen, onClose, orderData }: O
                 </h4>
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600 dark:text-gray-400">Tipo de Tarjeta</p>
-                  <p className="font-medium dark:text-white">{orderData.paymentMethod.cardType}</p>
+                  <p className="font-medium dark:text-white">{orderData.paymentMethod?.cardType || 'N/A'}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Número de Tarjeta</p>
-                  <p className="font-mono dark:text-white">{maskCardNumber(orderData.paymentMethod.cardNumber)}</p>
+                  <p className="font-mono dark:text-white">{orderData.paymentMethod?.cardNumber ? maskCardNumber(orderData.paymentMethod.cardNumber) : 'N/A'}</p>
                 </div>
               </CardContent>
             </Card>
