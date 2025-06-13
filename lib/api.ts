@@ -166,6 +166,10 @@ class ApiClient {
     return this.request<any[]>('/orders');
   }
 
+  async getOrdersByUser(userId: string) {
+    return this.request<any[]>(`/orders/user/${userId}`);
+  }
+
   async getOrderById(id: string) {
     return this.request<any>(`/orders/${id}`);
   }
